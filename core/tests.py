@@ -163,6 +163,30 @@ class AtelierSecurityTests(TestCase):
         self.assertContains(locked, "bloqué")
 
 
+class EnsureAdminTests(TestCase):
+    def test_creates_and_updates_staff_user(self):
+        from django.core.management import call_command
+
+        with self.settings(
+            ADMIN_USERNAME="prodadmin",
+            ADMIN_PASSWORD="secret-pass-1",
+            ADMIN_EMAIL="prod@example.com",
+        ):
+            call_command("ensure_admin")
+        user = User.objects.get(username="prodadmin")
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.check_password("secret-pass-1"))
+        with self.settings(
+            ADMIN_USERNAME="prodadmin",
+            ADMIN_PASSWORD="secret-pass-2",
+            ADMIN_EMAIL="prod@example.com",
+        ):
+            call_command("ensure_admin")
+        user.refresh_from_db()
+        self.assertTrue(user.check_password("secret-pass-2"))
+
+
 class StudioCrudTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_superuser("arsene", "arsene@example.com", "correct-pass")
