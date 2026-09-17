@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ title|default:"Atelier" }}{% endblock %} — Atelier</title>
+    <meta name="theme-color" content="#07080b">
+    <link rel="manifest" href="{% url 'core:manifest' %}">
+    <link rel="apple-touch-icon" href="{% static 'icons/atelier-192.png' %}">
+    <link rel="stylesheet" href="{% static 'css/studio.css' %}">
+</head>
+<body class="studio">
+    <header class="studio-top">
+        <a class="studio-brand" href="{% url 'studio:home' %}">
+            <span>∑</span>
+            Atelier
+        </a>
+        <h1>{% block heading %}{{ title }}{% endblock %}</h1>
+        <div class="studio-top-actions">
+            <span class="who">{{ atelier_user.username }}</span>
+            <form method="post" action="{% url 'studio:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn ghost">Sortir</button>
+            </form>
+            <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="studio-menu" data-menu-toggle>
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+    <div class="studio-scrim" data-menu-scrim></div>
+    <aside class="studio-menu" id="studio-menu" data-menu aria-hidden="true">
+        <div class="studio-menu-head">
+            <p>Navigation</p>
+            <button class="menu-close" type="button" aria-label="Fermer le menu" data-menu-close>×</button>
+        </div>
+        <nav>
+            {% for item in nav_items %}
+            <a href="{{ item.url }}" class="{% if item.active %}is-active{% endif %}">
+                {{ item.label }}
+                {% if item.unread %}<b>{{ item.unread }}</b>{% endif %}
+            </a>
+            {% endfor %}
+        </nav>
+        <a class="studio-site" href="{% url 'core:home' %}" target="_blank" rel="noreferrer">Voir le site ↗</a>
+    </aside>
+    {% if messages %}
+    <div class="studio-toasts">
+        {% for message in messages %}
+        <p class="toast {{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <section class="studio-content">
+        {% block content %}{% endblock %}
+    </section>
+    <button class="pwa-install" type="button" data-pwa-install>Installer l’app</button>
+    <script src="{% static 'js/studio.js' %}"></script>
+    <script src="{% static 'js/pwa.js' %}"></script>
+</body>
+</html>

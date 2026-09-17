@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Contact{% endblock %}
+
+{% block content %}
+<section class="contact-layout">
+    <div>
+        <p class="mono faint">fichier · contact</p>
+        <h1>Écris-moi.<br><em>Stage, data, plateforme.</em></h1>
+        <p class="hero-lead">{{ profile.availability }}</p>
+        <ul class="contact-facts">
+            {% if profile.email %}<li class="mono">{{ profile.email }}</li>{% endif %}
+            {% if profile.location %}<li>{{ profile.location }}</li>{% endif %}
+            {% if profile.github %}<li><a href="{{ profile.github }}" target="_blank" rel="noreferrer">GitHub</a></li>{% endif %}
+            {% if profile.linkedin %}<li><a href="{{ profile.linkedin }}" target="_blank" rel="noreferrer">LinkedIn</a></li>{% endif %}
+        </ul>
+    </div>
+    <form class="contact-form" method="post" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+        <div class="form-errors">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <label>
+            <span class="mono faint">nom</span>
+            {{ form.name }}
+            {{ form.name.errors }}
+        </label>
+        <label>
+            <span class="mono faint">email</span>
+            {{ form.email }}
+            {{ form.email.errors }}
+        </label>
+        <label>
+            <span class="mono faint">WhatsApp</span>
+            {{ form.phone }}
+            {{ form.phone.errors }}
+        </label>
+        <label>
+            <span class="mono faint">sujet</span>
+            {{ form.subject }}
+            {{ form.subject.errors }}
+        </label>
+        <label>
+            <span class="mono faint">message</span>
+            {{ form.message }}
+            {{ form.message.errors }}
+        </label>
+        <button class="btn btn-primary" type="submit">Envoyer</button>
+    </form>
+</section>
+{% endblock %}

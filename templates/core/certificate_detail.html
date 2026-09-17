@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}{{ certificate.title }}{% endblock %}
+
+{% block content %}
+<article class="case">
+    <p class="mono faint">
+        <a href="{% url 'core:certificates' %}">certificats</a> / {{ certificate.slug }}
+    </p>
+    <header class="case-hero">
+        <div>
+            <p class="mono accent">{{ certificate.get_kind_display }} · {{ certificate.issued_on|date:"d F Y" }}</p>
+            <h1>{{ certificate.title }}</h1>
+            <p class="hero-lead">{{ certificate.issuer }}</p>
+            <div class="case-actions">
+                {% if certificate.file %}
+                <a class="btn btn-primary" href="{% url 'core:certificate_view' certificate.slug %}">Consulter</a>
+                <a class="btn btn-ghost" href="{% url 'core:certificate_download' certificate.slug %}">Télécharger</a>
+                {% endif %}
+                {% if certificate.credential_url %}
+                <a class="btn btn-ghost" href="{{ certificate.credential_url }}" target="_blank" rel="noreferrer">Lien du certificat</a>
+                {% endif %}
+                {% if certificate.course_url %}
+                <a class="btn btn-ghost" href="{{ certificate.course_url }}" target="_blank" rel="noreferrer">Formation en ligne</a>
+                {% endif %}
+            </div>
+        </div>
+        <aside class="case-facts">
+            <p><span class="mono faint">organisme</span>{{ certificate.issuer }}</p>
+            <p><span class="mono faint">date</span>{{ certificate.issued_on|date:"d/m/Y" }}</p>
+            {% if certificate.credential_id %}
+            <p><span class="mono faint">id</span>{{ certificate.credential_id }}</p>
+            {% endif %}
+            {% if certificate.credential_url %}
+            <p><span class="mono faint">certificat</span><a href="{{ certificate.credential_url }}" target="_blank" rel="noreferrer">Ouvrir le lien</a></p>
+            {% endif %}
+            {% if certificate.course_url %}
+            <p><span class="mono faint">formation</span><a href="{{ certificate.course_url }}" target="_blank" rel="noreferrer">Cours en ligne</a></p>
+            {% endif %}
+        </aside>
+    </header>
+
+    {% if certificate.image %}
+    <img class="case-cover" src="{{ certificate.image.url }}" alt="{{ certificate.title }}">
+    {% elif certificate.file %}
+    <iframe class="pdf-frame" title="{{ certificate.title }}" src="{% url 'core:certificate_view' certificate.slug %}"></iframe>
+    {% endif %}
+
+    {% if certificate.description %}
+    <div class="case-body">{{ certificate.description|linebreaks }}</div>
+    {% endif %}
+</article>
+
+{% if related %}
+<section class="section">
+    <header class="section-head">
+        <p class="mono faint">autres preuves</p>
+        <h2>Dans le même type</h2>
+    </header>
+    <div class="doc-grid">
+        {% for item in related %}
+        <a class="doc-card reveal" href="{{ item.get_absolute_url }}">
+            <p class="mono accent">{{ item.get_kind_display }}</p>
+            <h3>{{ item.title }}</h3>
+            <p class="muted">{{ item.issuer }}</p>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}{{ cv.title }}{% endblock %}
+
+{% block content %}
+<article class="case">
+    <p class="mono faint">
+        <a href="{% url 'core:cvs' %}">cv</a> / {{ cv.title|slugify }}
+    </p>
+    <header class="case-hero">
+        <div>
+            <p class="mono accent">{{ cv.language }}{% if cv.version %} · {{ cv.version }}{% endif %}{% if cv.is_primary %} · principal{% endif %}</p>
+            <h1>{{ cv.title }}</h1>
+            {% if cv.summary %}<p class="hero-lead">{{ cv.summary }}</p>{% endif %}
+            <div class="case-actions">
+                {% if cv.file %}
+                <a class="btn btn-primary" href="{% url 'core:cv_view' cv.pk %}">Consulter</a>
+                <a class="btn btn-ghost" href="{% url 'core:cv_download' cv.pk %}">Télécharger</a>
+                {% endif %}
+            </div>
+        </div>
+        <aside class="case-facts">
+            <p><span class="mono faint">langue</span>{{ cv.language }}</p>
+            <p><span class="mono faint">mise à jour</span>{{ cv.updated_at|date:"d/m/Y" }}</p>
+            {% if cv.version %}<p><span class="mono faint">version</span>{{ cv.version }}</p>{% endif %}
+        </aside>
+    </header>
+
+    {% if cv.file %}
+    <iframe class="pdf-frame" title="{{ cv.title }}" src="{% url 'core:cv_view' cv.pk %}"></iframe>
+    {% else %}
+    <p class="muted">Le PDF n’est pas encore déposé. Ajoute-le dans l’admin → CV.</p>
+    {% endif %}
+</article>
+
+{% if others %}
+<section class="section">
+    <header class="section-head">
+        <p class="mono faint">autres versions</p>
+        <h2>CV disponibles</h2>
+    </header>
+    <div class="doc-grid">
+        {% for item in others %}
+        <a class="doc-card reveal" href="{{ item.get_absolute_url }}">
+            <p class="mono accent">{{ item.language }}</p>
+            <h3>{{ item.title }}</h3>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "studio/base.html" %}
+
+{% block content %}
+<p class="muted">3 tentatives max. Un verrou tombe après {{ 30 }} minutes, ou ici manuellement.</p>
+<form method="post">
+    {% csrf_token %}
+    <div class="table-wrap">
+        <table class="data">
+            <thead>
+                <tr>
+                    <th class="check"><input type="checkbox" data-check-all></th>
+                    <th>IP</th>
+                    <th>Échecs</th>
+                    <th>Bloqué jusqu’à</th>
+                    <th>Dernier essai</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lock in locks %}
+                <tr>
+                    <td class="check"><input type="checkbox" name="ids" value="{{ lock.pk }}"></td>
+                    <td>{{ lock.ip_address }}</td>
+                    <td>{{ lock.failures }}</td>
+                    <td>{% if lock.is_locked %}{{ lock.locked_until|date:"d/m/Y H:i" }}{% else %}—{% endif %}</td>
+                    <td>{{ lock.last_attempt|date:"d/m/Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="muted">Aucun verrou.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="bulk">
+        <button class="btn primary" type="submit">Débloquer la sélection</button>
+    </div>
+</form>
+{% endblock %}

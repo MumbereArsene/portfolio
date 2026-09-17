@@ -1,0 +1,56 @@
+{% extends "studio/base.html" %}
+
+{% block content %}
+<div class="toolbar">
+    <form class="search" method="get">
+        <input class="studio-input" type="search" name="q" value="{{ query }}" placeholder="Nom, email, WhatsApp, sujet…">
+        <button class="btn ghost" type="submit">Filtrer</button>
+    </form>
+</div>
+<form method="post">
+    {% csrf_token %}
+    <div class="table-wrap">
+        <table class="data">
+            <thead>
+                <tr>
+                    <th class="check"><input type="checkbox" data-check-all></th>
+                    <th>De</th>
+                    <th>Contact</th>
+                    <th>Sujet</th>
+                    <th>Reçu</th>
+                    <th>État</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in page %}
+                <tr class="{% if not item.is_read %}unread{% endif %}">
+                    <td class="check"><input type="checkbox" name="ids" value="{{ item.pk }}"></td>
+                    <td>{{ item.name }}</td>
+                    <td>
+                        <div class="reply-links">
+                            <a href="{{ item.mailto_url }}">{{ item.email }}</a>
+                            {% if item.whatsapp_url %}
+                            <a href="{{ item.whatsapp_url }}" target="_blank" rel="noreferrer">WhatsApp {{ item.phone }}</a>
+                            {% elif item.phone %}
+                            <span class="muted">{{ item.phone }}</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>{{ item.subject }}</td>
+                    <td>{{ item.created_at|date:"d/m/Y H:i" }}</td>
+                    <td>{% if item.is_read %}lu{% else %}nouveau{% endif %}</td>
+                    <td class="row-actions"><a href="{% url 'studio:message_detail' item.pk %}">Ouvrir</a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="muted">Aucun message.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="bulk">
+        <button class="btn ghost" name="action" value="read">Marquer lu</button>
+        <button class="btn ghost" name="action" value="delete" data-confirm="Supprimer ces messages ?">Supprimer</button>
+    </div>
+</form>
+{% endblock %}

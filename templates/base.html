@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ profile.display_name|default:"Mumbere Siviwe" }} ({{ profile.also_known_as|default:"Arsène" }}){% endblock %} — Portfolio</title>
+    <meta name="description" content="{% block meta_description %}{{ profile.tagline|default:'Étudiant math-info, futur ingénieur data et deep learning. Portfolio de Mumbere Siviwe, aussi connu comme Arsène.' }}{% endblock %}">
+    <meta name="keywords" content="Mumbere Siviwe, Arsène, Arsene, Arsène Mumbere, portfolio, math-info, ingénieur data, deep learning, Django, Python">
+    <meta name="author" content="{{ profile.display_name|default:'Mumbere Siviwe' }}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{% block canonical %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:title" content="{{ profile.display_name|default:'Mumbere Siviwe' }} ({{ profile.also_known_as|default:'Arsène' }}) — Portfolio">
+    <meta property="og:description" content="{{ profile.tagline|default:'Étudiant math-info, data, deep learning et Django.' }}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    {% if profile.photo %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ profile.photo.url }}">
+    <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ profile.photo.url }}">
+    {% endif %}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ profile.display_name|default:'Mumbere Siviwe' }} (Arsène)">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,400;1,9..144,600&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="grid-bg" aria-hidden="true"></div>
+    <header class="site-header">
+        <a class="brand" href="{% url 'core:home' %}">
+            <span class="brand-mark">∑</span>
+            <span class="brand-name">{{ profile.last_name|default:"Mumbere" }}</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="site-menu" data-nav-toggle>
+            <span></span><span></span><span></span>
+        </button>
+        <div class="site-scrim" data-nav-scrim></div>
+        <aside class="site-menu" id="site-menu" data-nav>
+            <div class="site-menu-head">
+                <p>Menu</p>
+                <button class="menu-close" type="button" aria-label="Fermer le menu" data-nav-close>
+                    <span></span><span></span>
+                </button>
+            </div>
+            <nav>
+                <a href="{% url 'core:home' %}" {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>Index</a>
+                <a href="{% url 'core:about' %}" {% if request.resolver_match.url_name == 'about' %}aria-current="page"{% endif %}>À propos</a>
+                <a href="{% url 'core:projects' %}" {% if request.resolver_match.url_name == 'projects' or request.resolver_match.url_name == 'project_detail' %}aria-current="page"{% endif %}>Projets</a>
+                <a href="{% url 'core:certificates' %}" {% if request.resolver_match.url_name == 'certificates' or request.resolver_match.url_name == 'certificate_detail' %}aria-current="page"{% endif %}>Certificats</a>
+                <a href="{% url 'core:cvs' %}" {% if request.resolver_match.url_name == 'cvs' or request.resolver_match.url_name == 'cv_detail' %}aria-current="page"{% endif %}>CV</a>
+            </nav>
+            <a href="{% url 'core:contact' %}" class="nav-cta" {% if request.resolver_match.url_name == 'contact' %}aria-current="page"{% endif %}>Écrire</a>
+        </aside>
+    </header>
+
+    {% if messages %}
+    <div class="toast-stack">
+        {% for message in messages %}
+        <p class="toast">{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-grid">
+            <div>
+                <p class="mono faint">coordonnées</p>
+                <p class="footer-name">{{ profile.display_name|default:"Mumbere Siviwe" }}</p>
+                <p class="muted">{{ profile.also_known_as|default:"Arsène" }} · {{ profile.headline|default:"Math-info · data · deep · Django" }}</p>
+            </div>
+            <div>
+                <p class="mono faint">liens</p>
+                <a href="{% url 'core:projects' %}">Tous les projets</a>
+                <a href="{% url 'core:certificates' %}">Certificats</a>
+                <a href="{% url 'core:cvs' %}">CV</a>
+                <a href="{% url 'core:skills' %}">Compétences</a>
+                <a href="{% url 'core:about' %}">Parcours</a>
+                <a href="{% url 'core:contact' %}">Contact</a>
+                {% if profile.github %}<a href="{{ profile.github }}" target="_blank" rel="noreferrer">GitHub</a>{% endif %}
+                {% if profile.linkedin %}<a href="{{ profile.linkedin }}" target="_blank" rel="noreferrer">LinkedIn</a>{% endif %}
+            </div>
+            <div>
+                <p class="mono faint">statut</p>
+                <p class="status-line">
+                    <span class="pulse"></span>
+                    {{ profile.availability|default:"Ouvert aux collaborations" }}
+                </p>
+                <p class="muted">{{ profile.email|default:"" }}</p>
+            </div>
+        </div>
+        <p class="legal mono">© {% now "Y" %} {{ profile.display_name|default:"Mumbere Siviwe" }} · aussi Arsène · Django only</p>
+    </footer>
+    <script type="application/ld+json">{{ person_jsonld|safe }}</script>
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

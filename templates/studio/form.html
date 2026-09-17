@@ -1,0 +1,39 @@
+{% extends "studio/base.html" %}
+
+{% block content %}
+<form class="studio-form" method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="form-grid">
+        {% for field in form %}
+        <label class="{% if field.name != 'tags' and field.name != 'categories' and field.field.widget.input_type == 'checkbox' %}check-row{% endif %} {% if field.name == 'description' or field.name == 'bio' or field.name == 'summary' or field.name == 'excerpt' or field.name == 'tags' or field.name == 'categories' %}wide{% endif %}">
+            <span>{{ field.label }}</span>
+            {{ field }}
+            {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+            {{ field.errors }}
+        </label>
+        {% endfor %}
+    </div>
+    {% if history %}
+    <aside class="history">
+        <h2>Évolution</h2>
+        <ul>
+            {% for log in history %}
+            <li>{{ log.recorded_at|date:"d/m/Y" }} · {{ log.level }}% {% if log.note %}— {{ log.note }}{% endif %}</li>
+            {% endfor %}
+        </ul>
+    </aside>
+    {% endif %}
+    <div class="form-actions">
+        <button class="btn primary" type="submit">Enregistrer</button>
+        {% if spec %}
+        <a class="btn ghost" href="{% url 'studio:list' spec.key %}">Annuler</a>
+        {% else %}
+        <a class="btn ghost" href="{% url 'studio:home' %}">Retour</a>
+        {% endif %}
+        {% if object and spec and spec.can_delete %}
+        <a class="btn danger" href="{% url 'studio:delete' spec.key object.pk %}">Supprimer</a>
+        {% endif %}
+    </div>
+</form>
+{% endblock %}

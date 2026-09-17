@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load portfolio %}
+
+{% block title %}Projets{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <p class="mono faint">fichier · projets</p>
+    <h1>Plateformes, pipelines,<br><em>modèles et prototypes.</em></h1>
+    <p class="hero-lead">Les projets se publient depuis l’atelier interne : un lien live devient l’image d’accueil sur le portfolio.</p>
+</section>
+
+<nav class="filter-bar" aria-label="Filtrer les projets">
+    <a class="{% if not active_category %}is-active{% endif %}" href="{% url 'core:projects' %}">Tous <span>{{ total }}</span></a>
+    {% for cat in category_filters %}
+    <a class="{% if active_category == cat.value %}is-active{% endif %}" href="?cat={{ cat.value }}">
+        {{ cat.label }} <span>{{ cat.count }}</span>
+    </a>
+    {% endfor %}
+</nav>
+
+<div class="project-grid">
+    {% for project in projects %}
+        <a class="project-card reveal" href="{{ project.get_absolute_url }}" style="--accent: {{ project.accent }}">
+            <div class="shot">
+                <div class="shot-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+                {% if project.cover %}
+                <img class="project-cover" src="{{ project.cover.url }}" alt="Accueil — {{ project.title }}">
+                {% elif project.live_url %}
+                <img class="project-cover" src="{{ project.live_url|homepage_shot }}" alt="Accueil — {{ project.title }}">
+                {% else %}
+                <div class="project-cover pattern-{{ forloop.counter }}"></div>
+                {% endif %}
+            </div>
+        <div class="project-meta">
+            <p class="mono faint">{{ project.get_category_display }} · {{ project.year }}</p>
+            <h3>{{ project.title }}</h3>
+            <p>{{ project.excerpt }}</p>
+            <ul class="tag-list">
+                {% for tag in project.tags.all %}
+                <li>{{ tag.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </a>
+    {% empty %}
+    <p class="muted">Aucun projet dans ce filtre. Publie-en un depuis l’admin.</p>
+    {% endfor %}
+</div>
+{% endblock %}

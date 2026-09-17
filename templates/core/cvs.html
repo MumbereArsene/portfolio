@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}CV{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <p class="mono faint">fichier · CV</p>
+    <h1>Plusieurs versions.<br><em>À consulter ou télécharger.</em></h1>
+    <p class="hero-lead">Chaque CV se dépose dans l’admin. Tu peux en garder plusieurs : data, Django, académique, FR ou EN — et les mettre à jour sans toucher au code.</p>
+</section>
+
+<div class="doc-grid">
+    {% for cv in cvs %}
+    <article class="doc-card reveal">
+        <p class="mono accent">
+            {{ cv.language }}{% if cv.version %} · {{ cv.version }}{% endif %}{% if cv.is_primary %} · principal{% endif %}
+        </p>
+        <h3><a href="{{ cv.get_absolute_url }}">{{ cv.title }}</a></h3>
+        {% if cv.summary %}<p>{{ cv.summary }}</p>{% endif %}
+        <p class="mono faint">Mis à jour le {{ cv.updated_at|date:"d/m/Y" }}</p>
+        <div class="doc-actions">
+            <a class="btn btn-ghost" href="{{ cv.get_absolute_url }}">Ouvrir</a>
+            {% if cv.file %}
+            <a class="btn btn-ghost" href="{% url 'core:cv_view' cv.pk %}">Consulter</a>
+            <a class="btn btn-primary" href="{% url 'core:cv_download' cv.pk %}">Télécharger</a>
+            {% endif %}
+        </div>
+    </article>
+    {% empty %}
+    <p class="muted">Aucun CV publié. Ajoute un PDF dans l’admin, section CV.</p>
+    {% endfor %}
+</div>
+{% endblock %}

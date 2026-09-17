@@ -1,0 +1,46 @@
+{% extends "studio/base.html" %}
+
+{% block content %}
+<div class="kpi-grid">
+    <article><p>Projets</p><strong>{{ counts.projets }}</strong><span>{{ counts.publies }} publiés</span></article>
+    <article><p>Certificats</p><strong>{{ counts.certificats }}</strong><span>preuves</span></article>
+    <article><p>CV</p><strong>{{ counts.cv }}</strong><span>versions</span></article>
+    <article><p>Compétences</p><strong>{{ counts.competences }}</strong><span>niveaux vivants</span></article>
+    <article><p>Messages</p><strong>{{ counts.messages }}</strong><span>non lus</span></article>
+</div>
+
+<div class="dash-grid">
+    <section class="panel">
+        <header>
+            <h2>Projets récents</h2>
+            <a href="{% url 'studio:create' 'projets' %}">Nouveau</a>
+        </header>
+        <ul class="plain-list">
+            {% for project in recent_projects %}
+            <li>
+                <a href="{% url 'studio:update' 'projets' project.pk %}">{{ project.title }}</a>
+                <span>{{ project.year }} · {% if project.published %}publié{% else %}brouillon{% endif %}</span>
+            </li>
+            {% empty %}
+            <li class="muted">Aucun projet.</li>
+            {% endfor %}
+        </ul>
+    </section>
+    <section class="panel">
+        <header>
+            <h2>Boîte de réception</h2>
+            <a href="{% url 'studio:messages' %}">Tout voir</a>
+        </header>
+        <ul class="plain-list">
+            {% for item in recent_messages %}
+            <li>
+                <a href="{% url 'studio:message_detail' item.pk %}">{{ item.name }} — {{ item.subject }}</a>
+                <span>{{ item.created_at|date:"d/m H:i" }}{% if not item.is_read %} · nouveau{% endif %}</span>
+            </li>
+            {% empty %}
+            <li class="muted">Aucun message.</li>
+            {% endfor %}
+        </ul>
+    </section>
+</div>
+{% endblock %}

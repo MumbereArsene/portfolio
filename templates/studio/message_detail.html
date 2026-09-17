@@ -1,0 +1,31 @@
+{% extends "studio/base.html" %}
+
+{% block content %}
+<article class="panel message-body">
+    <p class="muted">{{ object.name }} · {{ object.created_at|date:"d/m/Y H:i" }}</p>
+    <h2>{{ object.subject }}</h2>
+    <div class="reply-card">
+        <p><span class="muted">Email</span> <a href="{{ object.mailto_url }}">{{ object.email }}</a></p>
+        {% if object.phone %}
+        <p>
+            <span class="muted">WhatsApp</span>
+            {% if object.whatsapp_url %}
+            <a href="{{ object.whatsapp_url }}" target="_blank" rel="noreferrer">{{ object.phone }}</a>
+            {% else %}
+            {{ object.phone }}
+            {% endif %}
+        </p>
+        {% endif %}
+    </div>
+    {{ object.message|linebreaks }}
+    <form method="post" class="form-actions">
+        {% csrf_token %}
+        <a class="btn primary" href="{{ object.mailto_url }}">Répondre par email</a>
+        {% if object.whatsapp_url %}
+        <a class="btn ghost" href="{{ object.whatsapp_url }}" target="_blank" rel="noreferrer">Répondre sur WhatsApp</a>
+        {% endif %}
+        <button class="btn danger" type="submit" data-confirm="Supprimer ce message ?">Supprimer</button>
+        <a class="btn ghost" href="{% url 'studio:messages' %}">Retour</a>
+    </form>
+</article>
+{% endblock %}

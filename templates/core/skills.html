@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Compétences{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <p class="mono faint">fichier · compétences</p>
+    <h1>Un stack vivant.<br><em>Les niveaux montent avec le temps.</em></h1>
+    <p class="hero-lead">Chaque barre se met à jour depuis l’admin. Quand un niveau change, l’historique est conservé — rien n’est figé dans le code.</p>
+</section>
+
+<section class="section">
+    <header class="section-head">
+        <p class="mono faint">mises à jour récentes</p>
+        <h2>Derniers mouvements</h2>
+    </header>
+    <ol class="timeline">
+        {% for skill in recent %}
+        <li class="reveal">
+            <p class="mono faint">{{ skill.category.name }} · {{ skill.updated_at|date:"d M Y" }}</p>
+            <h3>{{ skill.name }} · {{ skill.level }}%</h3>
+            {% if skill.latest_delta %}
+            <p class="delta">{% if skill.latest_delta > 0 %}+{% endif %}{{ skill.latest_delta }} points</p>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ol>
+</section>
+
+<section class="section">
+    <header class="section-head">
+        <p class="mono faint">grille</p>
+        <h2>Niveaux actuels</h2>
+    </header>
+    <div class="skill-board">
+        {% for category in categories %}
+        <article class="skill-col reveal">
+            <h3 class="mono">{{ category.name }}</h3>
+            {% for skill in category.skills.all %}
+            <div class="skill">
+                <div class="skill-row">
+                    <span>{{ skill.name }}</span>
+                    <span class="mono faint">
+                        {{ skill.level }}%
+                        {% if skill.latest_delta > 0 %}<em class="delta">+{{ skill.latest_delta }}</em>{% endif %}
+                    </span>
+                </div>
+                <div class="bar"><span style="width: {{ skill.level }}%"></span></div>
+                {% with logs=skill.history.all %}
+                {% if logs %}
+                <p class="skill-log mono faint">
+                    {% for log in logs|slice:":3" %}{{ log.recorded_at|date:"m/Y" }} {{ log.level }}%{% if not forloop.last %} · {% endif %}{% endfor %}
+                </p>
+                {% endif %}
+                {% endwith %}
+            </div>
+            {% endfor %}
+        </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

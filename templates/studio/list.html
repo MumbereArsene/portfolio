@@ -1,0 +1,62 @@
+{% extends "studio/base.html" %}
+
+{% block content %}
+<div class="toolbar">
+    <form class="search" method="get">
+        <input class="studio-input" type="search" name="q" value="{{ query }}" placeholder="Rechercher…">
+        <button class="btn ghost" type="submit">Filtrer</button>
+    </form>
+    {% if spec.can_create %}
+    <a class="btn primary" href="{% url 'studio:create' spec.key %}">Nouveau {{ spec.singular }}</a>
+    {% endif %}
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="table-wrap">
+        <table class="data">
+            <thead>
+                <tr>
+                    <th class="check"><input type="checkbox" data-check-all></th>
+                    {% for _attr, label, _kind in spec.columns %}
+                    <th>{{ label }}</th>
+                    {% endfor %}
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    <td class="check"><input type="checkbox" name="ids" value="{{ row.pk }}"></td>
+                    {% for cell, kind in row.cells %}
+                    <td class="cell-{{ kind }}">{{ cell }}</td>
+                    {% endfor %}
+                    <td class="row-actions">
+                        <a href="{% url 'studio:update' spec.key row.pk %}">Éditer</a>
+                        {% if spec.can_delete %}
+                        <a class="danger" href="{% url 'studio:delete' spec.key row.pk %}">Supprimer</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="12" class="muted">Aucun enregistrement. Crée le premier.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="bulk">
+        <button class="btn ghost" name="action" value="delete" data-confirm="Supprimer la sélection ?">Supprimer</button>
+        {% if has_published %}
+        <button class="btn ghost" name="action" value="publish">Publier</button>
+        <button class="btn ghost" name="action" value="unpublish">Dépublier</button>
+        {% endif %}
+        {% if page.has_other_pages %}
+        <div class="pager">
+            {% if page.has_previous %}<a href="?q={{ query }}&page={{ page.previous_page_number }}">←</a>{% endif %}
+            <span>{{ page.number }} / {{ page.paginator.num_pages }}</span>
+            {% if page.has_next %}<a href="?q={{ query }}&page={{ page.next_page_number }}">→</a>{% endif %}
+        </div>
+        {% endif %}
+    </div>
+</form>
+{% endblock %}

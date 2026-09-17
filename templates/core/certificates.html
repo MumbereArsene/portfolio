@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Certificats{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <p class="mono faint">fichier · certificats</p>
+    <h1>Preuves obtenues.<br><em>À consulter ou télécharger.</em></h1>
+    <p class="hero-lead">Les certificats, diplômes et formations s’ajoutent depuis l’admin. Tu peux les lire en ligne ou les télécharger en PDF.</p>
+</section>
+
+<div class="doc-grid">
+    {% for item in certificates %}
+    <article class="doc-card reveal">
+        <p class="mono accent">{{ item.get_kind_display }} · {{ item.issued_on|date:"F Y" }}</p>
+        <h3><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h3>
+        <p class="muted">{{ item.issuer }}</p>
+        {% if item.description %}<p>{{ item.description|truncatewords:22 }}</p>{% endif %}
+        <div class="doc-actions">
+            <a class="btn btn-ghost" href="{{ item.get_absolute_url }}">Voir</a>
+            {% if item.file %}
+            <a class="btn btn-ghost" href="{% url 'core:certificate_view' item.slug %}">Consulter</a>
+            <a class="btn btn-primary" href="{% url 'core:certificate_download' item.slug %}">Télécharger</a>
+            {% elif item.credential_url %}
+            <a class="btn btn-primary" href="{{ item.credential_url }}" target="_blank" rel="noreferrer">Certificat</a>
+            {% endif %}
+            {% if item.course_url %}
+            <a class="btn btn-ghost" href="{{ item.course_url }}" target="_blank" rel="noreferrer">Formation</a>
+            {% endif %}
+        </div>
+    </article>
+    {% empty %}
+    <p class="muted">Aucun certificat publié. Ajoute-les dans l’admin, section Certificats.</p>
+    {% endfor %}
+</div>
+{% endblock %}

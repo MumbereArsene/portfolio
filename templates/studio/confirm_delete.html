@@ -1,0 +1,15 @@
+{% extends "studio/base.html" %}
+
+{% block content %}
+<div class="panel danger-panel">
+    <p>Cette action est définitive.</p>
+    <h2>Supprimer « {{ object }} » ?</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-actions">
+            <button class="btn danger" type="submit">Confirmer la suppression</button>
+            <a class="btn ghost" href="{% url 'studio:list' spec.key %}">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

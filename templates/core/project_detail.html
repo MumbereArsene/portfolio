@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load portfolio %}
+
+{% block title %}{{ project.title }}{% endblock %}
+
+{% block content %}
+<article class="case">
+    <p class="mono faint">
+        <a href="{% url 'core:projects' %}">projets</a> / {{ project.slug }}
+    </p>
+    <header class="case-hero">
+        <div>
+            <p class="mono accent">{{ project.get_category_display }} · {{ project.year }}</p>
+            <h1>{{ project.title }}</h1>
+            <p class="hero-lead">{{ project.excerpt }}</p>
+            <div class="case-actions">
+                {% if project.live_url %}
+                <a class="btn btn-primary" href="{{ project.live_url }}" target="_blank" rel="noreferrer">Voir en ligne</a>
+                {% endif %}
+                {% if project.repo_url %}
+                <a class="btn btn-ghost" href="{{ project.repo_url }}" target="_blank" rel="noreferrer">Dépôt</a>
+                {% endif %}
+            </div>
+        </div>
+        <aside class="case-facts">
+            <p><span class="mono faint">rôle</span>{{ project.role|default:"Auteur" }}</p>
+            <p><span class="mono faint">année</span>{{ project.year }}</p>
+            <p><span class="mono faint">stack</span>
+                {% for tag in project.tags.all %}{{ tag.name }}{% if not forloop.last %} · {% endif %}{% endfor %}
+            </p>
+        </aside>
+    </header>
+
+    {% if project.cover %}
+    <div class="shot shot-large">
+        <div class="shot-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+        <img class="case-cover" src="{{ project.cover.url }}" alt="Accueil — {{ project.title }}">
+    </div>
+    {% elif project.live_url %}
+    <div class="shot shot-large">
+        <div class="shot-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+        <img class="case-cover" src="{{ project.live_url|homepage_shot }}" alt="Accueil — {{ project.title }}">
+    </div>
+    {% else %}
+    <div class="case-cover pattern-1" style="--accent: {{ project.accent }}"></div>
+    {% endif %}
+
+    <div class="case-body">
+        {{ project.description|linebreaks }}
+    </div>
+</article>
+
+{% if related %}
+<section class="section">
+    <header class="section-head">
+        <p class="mono faint">dans le même axe</p>
+        <h2>Autres dossiers</h2>
+    </header>
+    <div class="project-grid compact">
+        {% for item in related %}
+        <a class="project-card reveal" href="{{ item.get_absolute_url }}" style="--accent: {{ item.accent }}">
+            <div class="shot">
+                <div class="shot-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+                {% if item.cover %}
+                <img class="project-cover" src="{{ item.cover.url }}" alt="Accueil — {{ item.title }}">
+                {% elif item.live_url %}
+                <img class="project-cover" src="{{ item.live_url|homepage_shot }}" alt="Accueil — {{ item.title }}">
+                {% else %}
+                <div class="project-cover pattern-{{ forloop.counter }}"></div>
+                {% endif %}
+            </div>
+            <div class="project-meta">
+                <p class="mono faint">{{ item.get_category_display }}</p>
+                <h3>{{ item.title }}</h3>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

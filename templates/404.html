@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Page introuvable{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <p class="mono faint">erreur · 404</p>
+    <h1>Cette coordonnée<br><em>n’existe pas.</em></h1>
+    <a class="btn btn-primary" href="{% url 'core:home' %}">Retour à l’index</a>
+</section>
+{% endblock %}

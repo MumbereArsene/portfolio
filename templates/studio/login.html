@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Connexion — Atelier</title>
+    <meta name="theme-color" content="#07080b">
+    <link rel="manifest" href="{% url 'core:manifest' %}">
+    <link rel="apple-touch-icon" href="{% static 'icons/atelier-192.png' %}">
+    <link rel="stylesheet" href="{% static 'css/studio.css' %}">
+</head>
+<body class="studio-login">
+    <form class="login-card" method="post" novalidate>
+        {% csrf_token %}
+        <p class="kicker">accès restreint</p>
+        <h1>Atelier</h1>
+        <p class="lead">Session jeton active. Identifie-toi pour gérer le portfolio.</p>
+        {% if error %}<p class="form-error">{{ error }}</p>{% endif %}
+        <label>Identifiant {{ form.username }}</label>
+        <label>Mot de passe {{ form.password }}</label>
+        <button class="btn primary" type="submit" {% if locked %}disabled{% endif %}>Entrer</button>
+        <p class="hint">{% if locked %}Compte verrouillé.{% else %}{{ remaining }} tentative(s) restante(s).{% endif %}</p>
+    </form>
+    <button class="pwa-install" type="button" data-pwa-install>Installer l’app</button>
+    <script src="{% static 'js/pwa.js' %}"></script>
+</body>
+</html>
